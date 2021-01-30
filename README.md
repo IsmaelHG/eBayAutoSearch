@@ -8,7 +8,7 @@ To execute this script, just run "python scraper.py config.json"
 
 config.json will be a path to a json file that contains the eBay search url, the telegram bot API Key 
 and the telegram chatid that is going to receive the message. This two previous parameters are 
-optional so you can just specify them as an empty string (""). Check example.json for reference
+optional so you can just specify them as an empty string (""). Check the [example config](example.json) for reference
 
     eBay search URL can be get by just making a search with any filter you want (max price, location, only bids, etc)
     and copying the browser URL
@@ -17,8 +17,17 @@ optional so you can just specify them as an empty string (""). Check example.jso
 
     The telegram chatid can be retrieved when you send a message to @userinfobot on telegram
 
+### Pre-requisitos 📋
+
+_lxml_
+_requests_
+_pyTelegramBotAPI_
+
 You can quickly install all the requirements (lxml, requests, pyTelegramBotAPI) by using the well known 
-"pip install -r requirements.txt"
+
+```
+pip install -r requirements.txt
+```
 
 I'm developing this script for learning purposes so the script functionality may vastly change on the following weeks
 
