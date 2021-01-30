@@ -6,7 +6,7 @@ The id list will be printed on console and also can be sent to a telegram accoun
 
 To execute this script, just run "python scraper.py config.json"
 
-config.json will be a path to a json file that contains the eBay search url, the telegram bot API Key 
+config.json will be the path for a json file that contains the eBay search url, the telegram bot API Key 
 and the telegram chatid that is going to receive the message. This two previous parameters are 
 optional so you can just specify them as an empty string (""). Check the [example config](example.json) for reference
 
