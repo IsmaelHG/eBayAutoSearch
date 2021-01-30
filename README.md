@@ -20,6 +20,8 @@ optional so you can just specify them as an empty string (""). Check example.jso
 You can quickly install all the requirements (lxml, requests, pyTelegramBotAPI) by using the well known 
 "pip install -r requirements.txt"
 
+I'm developing this script for learning purposes so the script functionality may vastly change on the following weeks
+
 ### TODO
 * Make the script search for multiple pages
 
