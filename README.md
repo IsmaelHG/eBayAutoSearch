@@ -1,8 +1,8 @@
 # Basic eBay Scraper
 
 This is a pretty basic python script designed for getting every eBay product identifier from a specific search.
-The id list will be printed on console and also can be sent to a telegram account as a text message. It can get the id of up to 200 items, 
-this scraper only analyzes the first page of an eBay search
+The id list will be printed on console and also can be sent to a telegram account as a text message. This scraper only analyzes the first page of an eBay search, so it can only get the id of up to 200 items
+
 
 To execute this script, just run "python scraper.py config.json"
 
