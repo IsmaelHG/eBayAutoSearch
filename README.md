@@ -19,10 +19,6 @@ optional so you can just specify them as an empty string (""). Check the [exampl
 
 ### Pre-requirements 📋
 
-_lxml_
-_requests_
-_pyTelegramBotAPI_
-
 You can quickly install all the requirements (lxml, requests, pyTelegramBotAPI) by using the well known 
 
 ```
