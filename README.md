@@ -17,7 +17,7 @@ optional so you can just specify them as an empty string (""). Check the [exampl
 
     The telegram chatid can be retrieved when you send a message to @userinfobot on telegram
 
-### Pre-requisitos 📋
+### Pre-requirements 📋
 
 _lxml_
 _requests_
