@@ -6,6 +6,7 @@ import telebot
 import sqlite3
 import re
 import datetime
+import config_gui
 from urllib.parse import urlparse
 from lxml import html
 from sqlite3 import Error
@@ -102,6 +103,8 @@ def scraper(url, apikey, chatid, sleep):
 
 
 if __name__ == '__main__':
+    config_gui.GUI(sys.argv[1])
+
     # Obtain parameters from the json file
     # User must specify the file path as an argument when running this script
     with open(sys.argv[1]) as config_file:
@@ -112,6 +115,7 @@ if __name__ == '__main__':
         dbname = config["databaseFile"]
         sleep = config["sleep"]
 
+    config_file.close()
     # Connect to db and create the table (if not exists)
     con = sql_connection(dbname)
     cursor = con.cursor()

@@ -1,7 +1,1 @@
-{
-  "url": "https://www.ebay.es/sch/i.html?_nkw=ps5&_ipg=200",
-  "databaseFile": "database.db",
-  "sleep": "5",
-  "telegramAPIKEY": "",
-  "telegramCHATID": ""
-}
+{"url": "https://www.ebay.es/sch/i.html?_from=R40&_nkw=ps5&_sacat=0&_sop=10&_ipg=200", "telegramAPIKEY": "", "telegramCHATID": "", "databaseFile": "database.db", "sleep": "5"}
