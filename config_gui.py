@@ -1,4 +1,5 @@
 import json
+import os
 import tkinter as tk
 
 
@@ -61,14 +62,15 @@ class GUI:
         okbutton.grid(column=0, row=10)
         cancelbutton.grid(column=0, row=11)
 
-        with open(file_name) as config_file:
-            config = json.load(config_file)
-            self.urlentry.insert(0, config["url"])
-            self.apikeyentry.insert(0, config["telegramAPIKEY"])
-            self.chatidentry.insert(0, config["telegramCHATID"])
-            self.databaseentry.insert(0, config["databaseFile"])
-            self.sleepeentry.insert(0, config["sleep"])
+        if os.path.isfile(file_name):
+            with open(file_name) as config_file:
+                config = json.load(config_file)
+                self.urlentry.insert(0, config["url"])
+                self.apikeyentry.insert(0, config["telegramAPIKEY"])
+                self.chatidentry.insert(0, config["telegramCHATID"])
+                self.databaseentry.insert(0, config["databaseFile"])
+                self.sleepeentry.insert(0, config["sleep"])
+            config_file.close()
 
-        config_file.close()
 
         self.window.mainloop()

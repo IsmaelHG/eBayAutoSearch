@@ -103,11 +103,16 @@ def scraper(url, apikey, chatid, sleep):
 
 
 if __name__ == '__main__':
-    config_gui.GUI(sys.argv[1])
+    if len(sys.argv) == 1:
+        filename = "config.json"
+        config_gui.GUI(filename)
+    else:
+        filename = sys.argv[1]
+        config_gui.GUI(sys.argv[1])
 
     # Obtain parameters from the json file
     # User must specify the file path as an argument when running this script
-    with open(sys.argv[1]) as config_file:
+    with open(filename) as config_file:
         config = json.load(config_file)
         url = config["url"]
         apikey = config["telegramAPIKEY"]
