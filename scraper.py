@@ -14,6 +14,12 @@ from sys import exit
 
 global con
 
+MAX_RETRIES = 5
+
+
+class TooManyConnectionRetries(Exception):
+    pass
+
 
 def exit_handler(signal_received, frame):
     print("CTRL-C Pressed, exiting...")
@@ -34,12 +40,25 @@ def sql_connection(file_name):
 
 
 def scraper(url, apikey, chatid, sleep):
-    cursor = con.cursor()
+    cursordb = con.cursor()
 
     # Infinite loop, safe way to close the program is to send a SIGINT signal (CTRL-C)
     while True:
         # Load and parse the html from supplied ebay search page
-        r = requests.get(url)
+        # If it raises an connectionerror, it will retry a few times
+        for i in range(MAX_RETRIES):
+            try:
+                r = requests.get(url)
+            except requests.exceptions.ConnectionError:
+                print("Connection Error: Please check your internet connection")
+                print("Retrying in " + sleep + " seconds (" + i + "/" + MAX_RETRIES + ")")
+                continue
+            else:
+                break
+        else:
+            # The scraper will raise an exception if it exceeds the max number of connection retries (MAX_RETRIES)
+            raise TooManyConnectionRetries
+
         tree = html.fromstring(r.content)
 
         # Obtain every listing id
@@ -59,7 +78,7 @@ def scraper(url, apikey, chatid, sleep):
         for prodstr in productlist:
             try:
                 # Insert the id and the timestamp
-                cursor.execute("INSERT INTO identifiers(id,listingDate) VALUES(?,?)",
+                cursordb.execute("INSERT INTO identifiers(id,listingDate) VALUES(?,?)",
                                (prodstr, datetime.datetime.now()))
 
                 # Print the listing url based on the identifier
