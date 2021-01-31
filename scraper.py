@@ -51,7 +51,7 @@ def scraper(url, apikey, chatid, sleep):
                 r = requests.get(url)
             except requests.exceptions.ConnectionError:
                 print("Connection Error: Please check your internet connection")
-                print("Retrying in " + sleep + " seconds (" + i + "/" + MAX_RETRIES + ")")
+                print("Retrying in " + sleep + " seconds (" + i + "/" + str(MAX_RETRIES) + ")")
                 continue
             else:
                 break
