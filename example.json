@@ -1,7 +1,7 @@
 {
   "url": "https://www.ebay.es/sch/i.html?_nkw=ps5&_ipg=200",
+  "databaseFile": "xx.db",
+  "sleep": "5",
   "telegramAPIKEY": "",
-  "telegramCHATID": "",
-  "databaseFile": "database.db",
-  "sleep": "5"
+  "telegramCHATID": ""
 }
