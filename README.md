@@ -43,4 +43,5 @@ I'm developing this script for my own learning purposes so the script functional
 * Make the script search for multiple pages
 * Remove old database entries
 * Show more detailed info about every listing (price, country, etc)
+* Make a nice README
 
