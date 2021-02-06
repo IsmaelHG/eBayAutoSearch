@@ -3,7 +3,7 @@
 This is a pretty basic python script designed for getting every eBay listing link from a specific search.
 The url list will be printed on console and also can be sent to a telegram account as a text message. 
 
-It will search for new products every X seconds
+It will search for new products every X seconds and can support searches from any eBay country website (like US,UK,ES,GER, etc)
 
 ### Pre-requirements 📋
 
@@ -19,7 +19,7 @@ If you are on Windows, you can also download the .exe version on the releases se
 
 When you run the program, it will display a GUI that contains the configuration of the eBay search url, database file location, sleep time, the telegram bot API Key 
 and the telegram chatid that is going to receive the message. This two previous parameters are 
-optional so you can just specify them as an empty string (""). Check the [example config](example.json) for reference
+optional.
 
 ### Obtaining the URL and setting the parameters
 
@@ -41,6 +41,16 @@ optional so you can just specify them as an empty string (""). Check the [exampl
 
     The telegram chatid can be retrieved when you send a message to @userinfobot on telegram
 
+### Extra features
+
+This script can be run with two parameters
+
+```
+-path <file path>: By default, the program will load/store on a local "config.json" file 
+-nogui: If you specify this argument, there will be no GUI configuration and the program will immediately start.
+The configuration file must contain the parameters (config.json or any file you specified with -path)
+```
+Check the [example config](example.json) for reference of a configuration file structure
 
 ### TODO
 * Make the script search for multiple pages
