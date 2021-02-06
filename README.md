@@ -5,10 +5,10 @@ The url list will be printed on console and also can be sent to a telegram accou
 
 It will search for new products every X seconds
 
-To execute this script, just run "python scraper.py config.json"
-If you are on Windows, you can also download the .exe version on the releases section and run "scraper.exe config.json" on cmd. You don't need to install python to make it work.
+To execute this script, just run "python scraper.py"
+If you are on Windows, you can also download the .exe version on the releases section and run "scraper.exe". You don't need to install python to make it work.
 
-config.json will be the path for a json file that contains the eBay search url, database file location, sleep time, the telegram bot API Key 
+When you run the program, it will display a GUI that contains the configuration of the eBay search url, database file location, sleep time, the telegram bot API Key 
 and the telegram chatid that is going to receive the message. This two previous parameters are 
 optional so you can just specify them as an empty string (""). Check the [example config](example.json) for reference
 
@@ -27,6 +27,9 @@ optional so you can just specify them as an empty string (""). Check the [exampl
 ![alt text](ebaysearch2.jpg)
 
 ![alt text](ebaysearch.jpg)
+
+![alt text](guiconfig.jpg)
+
 
 
 ### Pre-requirements 📋
