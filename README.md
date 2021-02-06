@@ -1,4 +1,4 @@
-# Basic eBay Scraper
+# Basic eBay auto searcher
 
 This is a pretty basic python script designed for getting every eBay listing link from a specific search.
 The url list will be printed on console and also can be sent to a telegram account as a text message. 
