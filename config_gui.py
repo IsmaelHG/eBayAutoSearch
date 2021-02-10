@@ -72,5 +72,4 @@ class GUI:
                 self.sleepeentry.insert(0, config["sleep"])
             config_file.close()
 
-
         self.window.mainloop()

@@ -1,18 +1,19 @@
 import argparse
+import datetime
 import json
-import sys
+import re
+import sqlite3
 import time
+from signal import signal, SIGINT
+from sqlite3 import Error
+from sys import exit
+from urllib.parse import urlparse
+
 import requests
 import telebot
-import sqlite3
-import re
-import datetime
-import config_gui
-from urllib.parse import urlparse
 from lxml import html
-from sqlite3 import Error
-from signal import signal, SIGINT
-from sys import exit
+
+import config_gui
 
 global con
 
@@ -68,11 +69,16 @@ def scraper(url, apikey, chatid, sleep):
         # and another is by using "ListViewInner" class
         if "srp-results" in r.text:
             # srp-results
-            productlist = [re.findall("\d{12}", curr.attrib["href"])[0] for curr in
-                           tree.xpath('//*[contains(@class,"s-item__link")]')]
+            productlist = [(re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])[
+                                0], curr.xpath('.//*[contains(@class,"s-item__price")]')[0].text_content().replace("\n",
+                                                                                                                   "").replace(
+                "\t", "")) for curr in tree.xpath('//*[contains(@class,"s-item__info clearfix")]')]
         else:
             # ListViewInner
-            productlist = [curr.attrib["listingid"] for curr in tree.xpath('//*[@id="ListViewInner"]//li[@listingid]')]
+            productlist = [(curr.attrib["listingid"],
+                            curr.xpath('.//*[contains(@class,"lvprice prc")]//*[contains(@class,"bold")]')[
+                                0].text_content().replace("\n", "").replace("\t", "")) for curr in
+                           tree.xpath('//*[contains(@class,"sresult lvresult clearfix li")]')]
 
         # Insert every id into the database table
         # If the id is already present on the table, cursor.execute() will raise an sqlite3.IntegrityError exception which will skip the process of sending the link
@@ -81,16 +87,18 @@ def scraper(url, apikey, chatid, sleep):
             try:
                 # Insert the id and the timestamp
                 cursordb.execute("INSERT INTO identifiers(id,listingDate) VALUES(?,?)",
-                                 (prodstr, datetime.datetime.now()))
+                                 (prodstr[0], datetime.datetime.now()))
 
                 # Print the listing url based on the identifier
-                print("https://" + urlparse(url).netloc + "/itm/" + prodstr)
+                print("https://" + urlparse(url).netloc + "/itm/" + prodstr[0])
+                print(prodstr[1])
 
                 # If the user specified a telegram bot apikey + chatid, it will send the previously printed list as a text message (only if the previous line didn't produce an exception)
                 if apikey != "" and chatid != "":
                     try:
                         telebot.TeleBot(apikey).send_message(chatid,
-                                                             "https://" + urlparse(url).netloc + "/itm/" + prodstr)
+                                                             "https://" + urlparse(url).netloc + "/itm/" + prodstr[
+                                                                 0] + "\n" + prodstr[1])
                         # Telegram API limits the number of messages per second so we need to wait a little bit
                         time.sleep(0.5)
                     except telebot.apihelper.ApiTelegramException:
