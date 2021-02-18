@@ -55,6 +55,7 @@ def scraper(url, apikey, chatid, sleep):
             except requests.exceptions.ConnectionError:
                 print("Connection Error: Please check your internet connection")
                 print("Retrying in " + sleep + " seconds (" + str(i) + "/" + str(MAX_RETRIES) + ")")
+                time.sleep(int(sleep))
                 continue
             else:
                 break
@@ -136,6 +137,7 @@ if __name__ == '__main__':
         sleep = config["sleep"]
 
     config_file.close()
+
     # Connect to db and create the table (if not exists)
     con = sql_connection(dbname)
     cursor = con.cursor()
