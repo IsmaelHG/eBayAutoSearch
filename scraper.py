@@ -18,6 +18,7 @@ import config_gui
 global con
 
 MAX_RETRIES = 5
+RESTART_TIME = 10
 
 
 class TooManyConnectionRetries(Exception):
@@ -25,6 +26,7 @@ class TooManyConnectionRetries(Exception):
 
 
 def exit_handler(signal_received, frame):
+    global con
     print("CTRL-C Pressed, exiting...")
     try:
         # Safely close the database connection and exit the application
@@ -43,6 +45,7 @@ def sql_connection(file_name):
 
 
 def scraper(url, apikey, chatid, sleep):
+    global con
     cursordb = con.cursor()
 
     # Infinite loop, safe way to close the program is to send a SIGINT signal (CTRL-C)
@@ -112,23 +115,11 @@ def scraper(url, apikey, chatid, sleep):
         time.sleep(int(sleep))
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-nogui", "--nogui", action="store_true")
-    parser.add_argument("-path", metavar="--path",
-                        type=str,
-                        default="config.json",
-                        required=False,
-                        help="the path to the config file (defaults to config.json)")
-
-    options = parser.parse_args()
-    filename = options.path
-    if not options.nogui:
-        config_gui.GUI(filename)
-
+def startup(filename_path):
+    global con
     # Obtain parameters from the json file
     # User must specify the file path as an argument when running this script
-    with open(filename) as config_file:
+    with open(filename_path) as config_file:
         config = json.load(config_file)
         url = config["url"]
         apikey = config["telegramAPIKEY"]
@@ -149,3 +140,27 @@ if __name__ == '__main__':
 
     # Start the scraper
     scraper(url, apikey, chatid, sleep)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-nogui", "--nogui", action="store_true")
+    parser.add_argument("-path", metavar="--path",
+                        type=str,
+                        default="config.json",
+                        required=False,
+                        help="the path to the config file (defaults to config.json)")
+
+    options = parser.parse_args()
+    filename = options.path
+    if not options.nogui:
+        config_gui.GUI(filename)
+
+    # There must be a better way
+    while True:
+        try:
+            startup(filename)
+        except Exception as e:
+            print(e)
+            print("Restarting the application in " + str(RESTART_TIME) + " seconds")
+            time.sleep(RESTART_TIME)
