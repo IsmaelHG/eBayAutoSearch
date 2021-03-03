@@ -164,3 +164,7 @@ if __name__ == '__main__':
             print(e)
             print("Restarting the application in " + str(RESTART_TIME) + " seconds")
             time.sleep(RESTART_TIME)
+            try:
+                con.close()
+            except Exception:
+                pass
