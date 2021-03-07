@@ -100,7 +100,7 @@ def scraper(url, apikey, chatid, sleep):
                 # If the user specified a telegram bot apikey + chatid, it will send the previously printed list as a text message (only if the previous line didn't produce an exception)
                 if apikey != "" and chatid != "":
                     try:
-                        telebot.TeleBot(apikey).send_message(chatid,
+                        telebot.TeleBot(apikey, threaded=False).send_message(chatid,
                                                              "https://" + urlparse(url).netloc + "/itm/" + prodstr[
                                                                  0] + "\n" + prodstr[1])
                         # Telegram API limits the number of messages per second so we need to wait a little bit
