@@ -71,5 +71,8 @@ class GUI:
                 self.databaseentry.insert(0, config["databaseFile"])
                 self.sleepeentry.insert(0, config["sleep"])
             config_file.close()
+        else:
+            self.databaseentry.insert(0, "database.db")
+            self.sleepeentry.insert(0, "10")
 
         self.window.mainloop()

@@ -38,8 +38,8 @@ def exit_handler(signal_received, frame):
 
 def sql_connection(file_name):
     try:
-        con = sqlite3.connect(file_name)
-        return con
+        conbd = sqlite3.connect(file_name)
+        return conbd
     except Error:
         print(Error)
 
