@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 ### Usage
 To execute this script, just run "python scraper.py"
-If you are on Windows, you can also download the .exe version on the releases section and run "scraper.exe". You don't need to install python to make it work.
+If you are on Windows/macOS, you can also download the .exe version on the releases section and run "scraper.exe". You don't need to install python to make it work.
 
 When you run the program, it will display a GUI that contains the configuration of the eBay search url, database file location, sleep time, the telegram bot API Key 
 and the telegram chatid that is going to receive the message. This two previous parameters are 
