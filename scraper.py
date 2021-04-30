@@ -76,7 +76,7 @@ def scraper(url, apikey, chatid, sleep):
             productlist = [(re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])[
                                 0], curr.xpath('.//*[contains(@class,"s-item__price")]')[0].text_content().replace("\n",
                                                                                                                    "").replace(
-                "\t", "")) for curr in tree.xpath('//*[contains(@class,"s-item__info clearfix")]')]
+                "\t", "")) for curr in tree.xpath('//*[contains(@class,"s-item__info clearfix") and ./a]')]
         else:
             # ListViewInner
             productlist = [(curr.attrib["listingid"],
