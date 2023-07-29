@@ -52,6 +52,11 @@ The configuration file must contain the parameters (config.json or any file you 
 ```
 Check the [example config](example.json) for reference of a configuration file structure
 
+### Issues
+
+eBay is blocking requests from datacenter IP addresses (AWS, Azure, GCloud, ...) as of July 2023.
+You will need a residential IP in order to use this bot.
+
 ### TODO
 * Make the script search for multiple pages
 * Remove old database entries
