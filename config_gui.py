@@ -1,10 +1,11 @@
 import json
 import os
+import sys
 import tkinter as tk
 
 
 def cancelclick():
-    exit(0)
+    sys.exit(0)
 
 
 class GUI:
@@ -76,3 +77,4 @@ class GUI:
             self.sleepeentry.insert(0, "10")
 
         self.window.mainloop()
+        self.window.update()
