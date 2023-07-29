@@ -77,4 +77,7 @@ class GUI:
             self.sleepeentry.insert(0, "10")
 
         self.window.mainloop()
-        self.window.update()
+        try:
+            self.window.update()
+        except Exception:
+            pass
