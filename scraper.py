@@ -10,7 +10,6 @@ from sys import exit
 from urllib.parse import urlparse
 
 import requests
-import telebot
 from lxml import html
 
 import config_gui
@@ -19,6 +18,11 @@ global con
 
 MAX_RETRIES = 5
 RESTART_TIME = 10
+
+
+def sendTelegram(msg, idchat, token):
+    requests.post('https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + idchat + '&text=' + msg,
+                  timeout=20)
 
 
 class TooManyConnectionRetries(Exception):
@@ -73,10 +77,12 @@ def scraper(url, apikey, chatid, sleep):
         # and another is by using "ListViewInner" class
         if "srp-results" in r.text:
             # srp-results
-            productlist = [(re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])[
-                                0], curr.xpath('.//*[contains(@class,"s-item__price")]')[0].text_content().replace("\n",
-                                                                                                                   "").replace(
-                "\t", "")) for curr in tree.xpath('//*[contains(@class,"s-item__info clearfix") and ./a]')]
+            productlist = [
+                (re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])[0],
+                 curr.xpath('.//*[contains(@class,"s-item__price")]')[0].text_content().replace("\n", "").replace("\t",
+                                                                                                                  ""))
+                for curr in tree.xpath('//*[contains(@class,"s-item__info clearfix") and ./a]') if
+                len(re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])) > 0]
         else:
             # ListViewInner
             productlist = [(curr.attrib["listingid"],
@@ -100,12 +106,12 @@ def scraper(url, apikey, chatid, sleep):
                 # If the user specified a telegram bot apikey + chatid, it will send the previously printed list as a text message (only if the previous line didn't produce an exception)
                 if apikey != "" and chatid != "":
                     try:
-                        telebot.TeleBot(apikey, threaded=False).send_message(chatid,
-                                                             "https://" + urlparse(url).netloc + "/itm/" + prodstr[
-                                                                 0] + "\n" + prodstr[1])
+                        sendTelegram("https://" + urlparse(
+                            url).netloc + "/itm/" + prodstr[
+                                         0] + "\n" + prodstr[1], chatid, apikey)
                         # Telegram API limits the number of messages per second so we need to wait a little bit
                         time.sleep(0.5)
-                    except telebot.apihelper.ApiTelegramException:
+                    except Exception:
                         pass
             except sqlite3.IntegrityError:
                 # When this exception rises, the program will just continue to the next element of the for-loop
