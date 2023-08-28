@@ -48,76 +48,84 @@ def sql_connection(file_name):
         print(Error)
 
 
-def scraper(url, apikey, chatid, sleep):
+def scraper(urls, apikey, chatid, sleep):
     global con
     cursordb = con.cursor()
 
     # Infinite loop, safe way to close the program is to send a SIGINT signal (CTRL-C)
     while True:
-        # Load and parse the html from supplied ebay search page
-        # If it raises an connectionerror, it will retry a few times
-        for i in range(MAX_RETRIES):
-            try:
-                r = requests.get(url)
-            except requests.exceptions.ConnectionError:
-                print("Connection Error: Please check your internet connection")
-                print("Retrying in " + sleep + " seconds (" + str(i) + "/" + str(MAX_RETRIES) + ")")
-                time.sleep(int(sleep))
-                continue
+        for url_item in urls:
+            url = url_item.get("url")
+            name = url_item.get("name")
+
+            if name:
+                print(f"[{datetime.datetime.now():%Y-%m-%d %H:%M:%S}] Scraping for {name}")
+
+            # Load and parse the html from supplied ebay search page
+            # If it raises an connectionerror, it will retry a few times
+            for i in range(MAX_RETRIES):
+                try:
+                    r = requests.get(url)
+                except requests.exceptions.ConnectionError:
+                    print("Connection Error: Please check your internet connection")
+                    print("Retrying in " + sleep + " seconds (" + str(i) + "/" + str(MAX_RETRIES) + ")")
+                    time.sleep(int(sleep))
+                    continue
+                else:
+                    break
             else:
-                break
-        else:
-            # The scraper will raise an exception if it exceeds the max number of connection retries (MAX_RETRIES)
-            raise TooManyConnectionRetries
+                # The scraper will raise an exception if it exceeds the max number of connection retries (MAX_RETRIES)
+                raise TooManyConnectionRetries
 
-        tree = html.fromstring(r.content)
+            tree = html.fromstring(r.content)
 
-        # Obtain every listing id
-        # eBay has two ways showing the listings, one is to show the listing with a "srp-results" class
-        # and another is by using "ListViewInner" class
-        if "srp-results" in r.text:
-            # srp-results
-            productlist = [
-                (re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])[0],
-                 curr.xpath('.//*[contains(@class,"s-item__price")]')[0].text_content().replace("\n", "").replace("\t",
-                                                                                                                  ""))
-                for curr in tree.xpath('//*[contains(@class,"s-item__info clearfix") and ./a]') if
-                len(re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])) > 0]
-        else:
-            # ListViewInner
-            productlist = [(curr.attrib["listingid"],
-                            curr.xpath('.//*[contains(@class,"lvprice prc")]//*[contains(@class,"bold")]')[
-                                0].text_content().replace("\n", "").replace("\t", "")) for curr in
-                           tree.xpath('//*[contains(@class,"sresult lvresult clearfix li")]')]
+            # Obtain every listing id
+            # eBay has two ways showing the listings, one is to show the listing with a "srp-results" class
+            # and another is by using "ListViewInner" class
+            if "srp-results" in r.text:
+                # srp-results
+                productlist = [
+                    (re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])[0],
+                    curr.xpath('.//*[contains(@class,"s-item__price")]')[0].text_content().replace("\n", "").replace("\t",
+                                                                                                                    ""))
+                    for curr in tree.xpath('//*[contains(@class,"s-item__info clearfix") and ./a]') if
+                    len(re.findall("\d{12}", curr.xpath('.//*[contains(@class,"s-item__link")]')[0].attrib["href"])) > 0]
+            else:
+                # ListViewInner
+                productlist = [(curr.attrib["listingid"],
+                                curr.xpath('.//*[contains(@class,"lvprice prc")]//*[contains(@class,"bold")]')[
+                                    0].text_content().replace("\n", "").replace("\t", "")) for curr in
+                            tree.xpath('//*[contains(@class,"sresult lvresult clearfix li")]')]
 
-        # Insert every id into the database table
-        # If the id is already present on the table, cursor.execute() will raise an sqlite3.IntegrityError exception which will skip the process of sending the link
-        # as a telegram message
-        for prodstr in productlist:
-            try:
-                # Insert the id and the timestamp
-                cursordb.execute("INSERT INTO identifiers(id,listingDate) VALUES(?,?)",
-                                 (prodstr[0], datetime.datetime.now()))
+            # Insert every id into the database table
+            # If the id is already present on the table, cursor.execute() will raise an sqlite3.IntegrityError exception which will skip the process of sending the link
+            # as a telegram message
+            for prodstr in productlist:
+                try:
+                    # Insert the id and the timestamp
+                    cursordb.execute("INSERT INTO identifiers(id,listingDate) VALUES(?,?)",
+                                    (prodstr[0], datetime.datetime.now()))
 
-                # Print the listing url based on the identifier
-                print("https://" + urlparse(url).netloc + "/itm/" + prodstr[0])
-                print(prodstr[1])
+                    # Print the listing url based on the identifier
+                    print("https://" + urlparse(url).netloc + "/itm/" + prodstr[0])
+                    print(prodstr[1])
 
-                # If the user specified a telegram bot apikey + chatid, it will send the previously printed list as a text message (only if the previous line didn't produce an exception)
-                if apikey != "" and chatid != "":
-                    try:
-                        sendTelegram("https://" + urlparse(
-                            url).netloc + "/itm/" + prodstr[
-                                         0] + "\n" + prodstr[1], chatid, apikey)
-                        # Telegram API limits the number of messages per second so we need to wait a little bit
-                        time.sleep(0.5)
-                    except Exception:
-                        pass
-            except sqlite3.IntegrityError:
-                # When this exception rises, the program will just continue to the next element of the for-loop
-                pass
-        con.commit()
-        # Wait before repeting the process
+                    # If the user specified a telegram bot apikey + chatid, it will send the previously printed list as a text message (only if the previous line didn't produce an exception)
+                    if apikey != "" and chatid != "":
+                        try:
+                            sendTelegram("https://" + urlparse(
+                                url).netloc + "/itm/" + prodstr[
+                                            0] + "\n" + prodstr[1], chatid, apikey)
+                            # Telegram API limits the number of messages per second so we need to wait a little bit
+                            time.sleep(0.5)
+                        except Exception:
+                            pass
+                except sqlite3.IntegrityError:
+                    # When this exception rises, the program will just continue to the next element of the for-loop
+                    pass
+            con.commit()
+            # Wait before repeting the process
+
         time.sleep(int(sleep))
 
 
@@ -127,7 +135,12 @@ def startup(filename_path):
     # User must specify the file path as an argument when running this script
     with open(filename_path) as config_file:
         config = json.load(config_file)
-        url = config["url"]
+
+        urls = config.get("urls")
+        if not urls:
+            url = config["url"]
+            urls = [{"url": url}]
+
         apikey = config["telegramAPIKEY"]
         chatid = config["telegramCHATID"]
         dbname = config["databaseFile"]
@@ -145,7 +158,7 @@ def startup(filename_path):
     signal(SIGINT, exit_handler)
 
     # Start the scraper
-    scraper(url, apikey, chatid, sleep)
+    scraper(urls, apikey, chatid, sleep)
 
 
 if __name__ == '__main__':
