@@ -10,7 +10,23 @@ def cancelclick():
 
 class GUI:
     def okclick(self):
-        data = {"url": self.urlentry.get(),
+
+        urls = []
+        urls_text = self.urlentry.get("1.0", "end-1c")
+        urls_lines = urls_text.split("\n")
+
+        for url_line in urls_lines:
+            if not url_line or len(url_line) < 2:
+                break
+
+            url_line = url_line.split(" ")
+
+            url_name = url_line[0] if len(url_line) > 1 else None
+            url_url = url_line[1] if url_name else url_line[0]
+
+            urls.append({"name": url_name, "url": url_url})
+
+        data = {"urls": urls,
                 "telegramAPIKEY": self.apikeyentry.get(),
                 "telegramCHATID": self.chatidentry.get(),
                 "databaseFile": self.databaseentry.get(),
@@ -25,10 +41,12 @@ class GUI:
     def __init__(self, file_name):
         self.file_name = file_name
         self.window = tk.Tk()
-        self.window.geometry('605x300')
+        self.window.geometry('706x550')
 
-        urllabel = tk.Label(text="url")
-        self.urlentry = tk.Entry(width=100, justify=tk.CENTER)
+        urllabel = tk.Label(text="urls (one per line)")
+        urlscroll = tk.Scrollbar(self.window, orient=tk.VERTICAL)
+        self.urlentry = tk.Text(width=100, height=16)
+        self.urlentry.configure(yscrollcommand=urlscroll.set)
 
         databaselabel = tk.Label(text="databaseFile")
         self.databaseentry = tk.Entry(width=100, justify="center")
@@ -66,7 +84,18 @@ class GUI:
         if os.path.isfile(file_name):
             with open(file_name) as config_file:
                 config = json.load(config_file)
-                self.urlentry.insert(0, config["url"])
+
+                # Get array of urls to scrape or fallback to single url
+                urls = config.get("urls")
+                if not urls:
+                    url = config["url"]
+                    urls = [{"url": url}]
+                
+                url_text = ""
+                for url in urls:
+                    url_text += f'{url["name"] if "name" in url else ""} {url["url"]}' + "\n"
+                self.urlentry.insert(tk.END, url_text)
+
                 self.apikeyentry.insert(0, config["telegramAPIKEY"])
                 self.chatidentry.insert(0, config["telegramCHATID"])
                 self.databaseentry.insert(0, config["databaseFile"])
