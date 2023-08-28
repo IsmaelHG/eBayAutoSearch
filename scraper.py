@@ -116,7 +116,7 @@ def scraper(urls, apikey, chatid, sleep):
                         try:
                             sendTelegram("https://" + urlparse(
                                 url).netloc + "/itm/" + prodstr[
-                                            0] + "\n" + prodstr[1], chatid, apikey)
+                                            0] + "\n" + prodstr[1] + (f"\n{name}") if name else "", chatid, apikey)
                             # Telegram API limits the number of messages per second so we need to wait a little bit
                             time.sleep(0.5)
                         except Exception:
