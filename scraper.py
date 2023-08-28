@@ -48,7 +48,7 @@ def sql_connection(file_name):
         print(Error)
 
 
-def scraper(urls, apikey, chatid, sleep):
+def scraper(urls, apikey, chatid, sleep, print_names=False):
     global con
     cursordb = con.cursor()
 
@@ -59,7 +59,7 @@ def scraper(urls, apikey, chatid, sleep):
             url = url_item.get("url")
             name = url_item.get("name")
 
-            if name:
+            if print_names and name:
                 print(f"[{datetime.datetime.now():%Y-%m-%d %H:%M:%S}] Scraping for {name}")
 
             # Load and parse the html from supplied ebay search page
@@ -130,7 +130,7 @@ def scraper(urls, apikey, chatid, sleep):
         time.sleep(int(sleep))
 
 
-def startup(filename_path):
+def startup(filename_path, print_names=False):
     global con
     # Obtain parameters from the json file
     # User must specify the file path as an argument when running this script
@@ -160,12 +160,13 @@ def startup(filename_path):
     signal(SIGINT, exit_handler)
 
     # Start the scraper
-    scraper(urls, apikey, chatid, sleep)
+    scraper(urls, apikey, chatid, sleep, print_names)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-nogui", "--nogui", action="store_true")
+    parser.add_argument("-printnames", "--printnames", action="store_true")
     parser.add_argument("-path", metavar="--path",
                         type=str,
                         default="config.json",
@@ -180,7 +181,7 @@ if __name__ == '__main__':
     # There must be a better way
     while True:
         try:
-            startup(filename)
+            startup(filename, options.printnames or False)
         except Exception as e:
             print(e)
             print("Restarting the application in " + str(RESTART_TIME) + " seconds")
