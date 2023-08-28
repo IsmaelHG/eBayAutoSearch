@@ -54,6 +54,7 @@ def scraper(urls, apikey, chatid, sleep):
 
     # Infinite loop, safe way to close the program is to send a SIGINT signal (CTRL-C)
     while True:
+        # Loop over every URL to scrape
         for url_item in urls:
             url = url_item.get("url")
             name = url_item.get("name")
@@ -136,6 +137,7 @@ def startup(filename_path):
     with open(filename_path) as config_file:
         config = json.load(config_file)
 
+        # Get array of urls to scrape or fallback to single url
         urls = config.get("urls")
         if not urls:
             url = config["url"]
