@@ -19,7 +19,7 @@ class GUI:
             if not url_line or len(url_line) < 2:
                 break
 
-            url_line = url_line.split(" ")
+            url_line = url_line.strip().split(" ")
 
             url_name = url_line[0] if len(url_line) > 1 else None
             url_url = url_line[1] if url_name else url_line[0]
@@ -93,7 +93,7 @@ class GUI:
                 
                 url_text = ""
                 for url in urls:
-                    url_text += f'{url["name"] if "name" in url else ""} {url["url"]}' + "\n"
+                    url_text += f'{(url["name"] + " ") if "name" in url else ""}{url["url"]}' + "\n"
                 self.urlentry.insert(tk.END, url_text)
 
                 self.apikeyentry.insert(0, config["telegramAPIKEY"])
